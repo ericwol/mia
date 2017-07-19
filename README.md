@@ -8,4 +8,4 @@ For all communications related to this repository please contact Eric Wolsztynsk
 Dr Eric Wolsztynski, 
 School of Mathematical Sciences, 
 University College Cork, Ireland
---- July 2017
+ --- July 2017
