@@ -5,7 +5,7 @@ Software repository for medical imaging analysis solutions. Main contributions w
 
 For all communications related to this repository please contact Eric Wolsztynski at eric.w@ucc.ie. 
 
-Dr Eric Wolsztynski
-School of Mathematical Sciences
+Dr Eric Wolsztynski, 
+School of Mathematical Sciences, 
 University College Cork, Ireland
 --- July 2017
