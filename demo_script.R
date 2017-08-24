@@ -56,7 +56,7 @@ for(i in 1:2){
 	ptid = ptids[i]
 	
 	# bounding box input VOI
-	tsv = matrix(scan(file=paste("data/",ptid,"_tumor.tsv",sep=""),skip=8),nc=5,byrow=TRUE)
+	tsv = matrix(scan(file=paste("ellmod/data/",ptid,"_tumor.tsv",sep=""),skip=8),nc=5,byrow=TRUE)
 	tsv[which(tsv[,1]<0),1] = abs(tsv[which(tsv[,1]<0),1])	
 	rtsv = rasterize.voi(tsv)
 	
