@@ -38,7 +38,7 @@ plot.profile <- function(hetEo,sqo,sdf=10,mpatch=""){
 		dg.w = sqo$w.gradients
 		# smoothing of output monotonic stepwise regression
 		gs = smooth.spline(u,yh0[is]) 
-		# the following yields very rough gradient info:
+		# the following gives rough gradient info:
 		g = approx(gs$x,gs$y,xout=u)$y 
 		# smooth initial regression more:
 		gs = smooth.spline(u,g,df=sdf) # smooth out again
@@ -51,16 +51,18 @@ plot.profile <- function(hetEo,sqo,sdf=10,mpatch=""){
 			xlab="u (radial ellipsoidal coordinates)",ylab="uptake",
 			type="pl",lty=c(1),pch=20,ylim=ylimi,lwd=3,cex=.5,
 			main=paste("Initial data and smooth regressions",mpatch,sep=""))
-		points(u,sqo$yh.i,ylim=ylimi,cex=1.2,col=2)
-		points(u, sqo$yh.b,col=4,pch=20,cex=1)
-		legend("topright",legend=c("isotonic","bitonic"),lty=1,
+		points(u,sqo$yh.i,ylim=ylimi,t='b',col=2,pch=15)
+		points(u, sqo$yh.b,col=4,pch=20,cex=1,t='b')
+		abline(h=0,col=8,lwd=.8)
+		legend("topright",legend=c("isotonic\ ","bitonic\ "),lty=1,
 			lwd=c(5,4),col=c(2,4))
 		# gradients
 		plot(u,dg.w,pch=20,main=paste("gradients",mpatch,sep=""),
 			xlab="u (radial ellipsoidal coordinates)",
 			ylab="gradient summaries")
 		points(u,dg,pch=20,col=2,cex=.6)	
-		legend("topright",legend=c("weighted","normalized"),pch=20,col=c(1,2))
+		abline(h=0,col=8,lwd=.8)
+		legend("topright",legend=c("uptake-\nweighted\ ","normalized\ "),pch=20,col=c(1,2))
 }
 
 # ----------------------------------------------------------------------------------- 
@@ -197,34 +199,17 @@ hetE <- function(z,par0=NULL,doplot=FALSE){
 	if (nls.cv=='TRUE'){
 		uu1=coef[1] ; uu2=coef[2] ; uu3=coef[3]
 		a1=coef[4]; a2=coef[5]; a3=coef[6]; a4=coef[7]; a5=coef[8]
-		v=iso.reg(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5)
-		yh=v[,2] 
-		res = (v[,3]-v[,2])
-		summary(yh) 
-		summary(y)
-		het1=100*mean(res^2)/var(y)
-		het0=100*mean(res^2)/mean(y^2)
-		hetvals=round(c(het0,het1,var(y)),4)
-		# write.table(hetvals,'hets.txt',row.names=FALSE,col.names=FALSE)
-		# # matplot(sort(v[,1]),v[order(v[,1]),c(3,2)],type="pl",lty=c(1),pch="*")
-		# # points(v[,1],yh0,col=4,pch=".")
-	} else {
-		bb=iso.reg(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5)
-		yh0 = bb[,2]
-		# matplot(sort(bb[,1]),bb[order(bb[,1]),c(3,2)],type="pl",lty=c(1),pch="*")
-		# points(bb[,1],yh0,col=4,pch=".")
-		yh=bb[,2] 
-		res = (bb[,3]-bb[,2])
-		summary(yh) 
-		summary(y)
-		het1=100*mean(res^2)/var(y)
-		het0=100*mean(res^2)/mean(y^2)	
-		hetvals=round(c(het0,het1,var(y)),4) 
-		# write.table(hetvals,'hets.txt',row.names=FALSE,col.names=FALSE)
-		v=bb
-		# matplot(sort(v[,1]),v[order(v[,1]),c(3,2)],type="pl",lty=c(1),pch="*")
-		# points(v[,1],yh0,col=4,pch=".")
 	}
+	v=iso.reg(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5)
+	yh=v[,2] 
+	res = (v[,3]-v[,2])
+	summary(yh) 
+	summary(y)
+	het1=100*mean(res^2)/var(y)
+	het0=100*mean(res^2)/mean(y^2)
+	hetvals=round(c(het0,het1,var(y)),4)
+	# matplot(sort(v[,1]),v[order(v[,1]),c(3,2)],type="pl",lty=c(1),pch="*")
+	# points(v[,1],yh0,col=4,pch=".")
 	return(list(iso.reg.out=v,
 				het0=het0,
 				het1=het1,
@@ -334,7 +319,7 @@ unismooth.sp <- function(u,y,ddf=50){
 
 #----------------------------------------------------------------------- final quantitation
 
-struct.quant <- function(out,zdim=1,xdim=1,bndT=.75,re.sign=TRUE,ddf=10){
+struct.quant <- function(out,zdim=1,xdim=1,bndT=.75,re.sign=TRUE,ddf=5){
 # Structural quantitation summaries of tumor uptake.
 # Arguments:
 #	out = output of hetE() 
@@ -370,7 +355,7 @@ struct.quant <- function(out,zdim=1,xdim=1,bndT=.75,re.sign=TRUE,ddf=10){
 	y = vb[o,3]
 	u = vb[o,1] 
 	u = u/median(ifelse(u>.001,u,.001))
-	if(1){ # just a switch:
+	if(0){ # just a switch:
 		# ..... one could switch to this if unsmoothed regression cuve is preferred
 		uu = unismooth(u,y)
 	} else {
