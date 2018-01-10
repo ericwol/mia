@@ -1,4 +1,3 @@
-
 rasterize.voi <- function(voi,def=NA){
 # In: impro.R
 # Input:
