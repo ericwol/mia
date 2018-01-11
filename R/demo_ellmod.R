@@ -2,6 +2,7 @@
 #' @import stats
 #' @import graphics
 #' @import grDevices
+#' @export
 demo.ellmod <- function(){
 # Demonstrates the use of hetE output. 
 # Runs heterogeneity and gradient analysis for two sample datasets

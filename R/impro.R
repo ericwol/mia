@@ -1,3 +1,4 @@
+#' @export
 rasterize.voi <- function(voi,def=NA){
 # In: impro.R
 # Input:
@@ -22,6 +23,7 @@ rasterize.voi <- function(voi,def=NA){
 	return(ras)
 }
 
+#' @export
 scan.views <- function(tsv,mlab="",LWD=.8){
 # Displays transverse, sagittal and coronal views of input 3D scan tsv.
 # mlab is a patch string for more detailed plot main title.

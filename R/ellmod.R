@@ -25,6 +25,7 @@ project <- function(x,y){
 
 #' @import stats
 #' @import graphics
+#' @export
 plot.profile <- function(hetEo,sqo,sdf=10,mpatch=""){
 # Local function, plots output of hetE and struct.quant analyses...
 # 	hetEo: 	output of hetE()
@@ -131,6 +132,7 @@ grad <- function(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5){
 # monotonic analyzer
 
 #' @import graphics
+#' @export
 hetE <- function(z,par0=NULL,doplot=FALSE){
 # Runs heterogeneity analysis based on isotonic regression, as in 
 #   Eary JF, O’Sullivan F, O’Sullivan J, Conrad EU. 
@@ -320,6 +322,7 @@ unismooth.sp <- function(u,y,ddf=50){
 #----------------------------------------------------------------------- final quantitation
 
 #' @import stats
+#' @export
 struct.quant <- function(out,zdim=1,xdim=1,bndT=.75,re.sign=TRUE,ddf=5){
 # Structural quantitation summaries of tumor uptake.
 # Arguments:
