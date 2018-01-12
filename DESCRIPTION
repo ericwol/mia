@@ -1,0 +1,17 @@
+Package: mia
+Version: 1.0
+Date: 2018-01-10
+Title: Medical Imaging Analysis Tools
+Authors@R: c(person("Eric", "Wolsztynski", email = "eric.w@ucc.ie", role = c("aut","cre")), person("Finbarr", "O'Sullivan", email = "f.osullivan@ucc.ie", role = "aut"))
+Author: Eric Wolsztynski [aut, cre],
+	Finbarr O'Sullivan [aut]
+Maintainer: Eric Wolsztynski <eric.w@ucc.ie>
+Depends: R (>= 3.0.0)
+Description: Software for medical imaging analysis solutions, with main contributions focusing on PET, MRI and CT imaging data. The current package provides an implementation of the ellipsoidal model for assessment of structural heterogeneity and metabolic gradients from PET imaging data, with two case examples of sarcoma tumors. The foundations of this implementation were presented in J. F. Eary, F. O'Sullivan, J. O'Sullivan and E. U. Conrad, Spatial heterogeneity in sarcoma 18F-FDG uptake as a predictor of patient outcome, J Nucl Med 49(12), 1973–1979 (2008), and updated in 2017. 
+License: GPL (>=3)
+URL: http://euclid.ucc.ie/eric
+Encoding: UTF-8
+LazyData: true
+Imports: quadprog,
+    stats
+RoxygenNote: 6.0.1
