@@ -12,6 +12,8 @@ out = output of hetE()
 		(defaults to 75th quantile of VOI radial coordinates) 
 re.sign = if TRUE, flips gradient curve sign for better interpretation
 		(a negative output gradient value would then indicate a decreasing rate)
+ sm.reg = if TRUE, gradients are computed from a smoothed unimodal regression fit
+ ddf = corresponding number of smooth.spline df's (between 5-10 usually works well)
 Values:
 u:		radial coordinates (sorted in increasing order)
 yh.i: 	isotonic fit for u values
@@ -33,7 +35,7 @@ yh.b: 	bitonic fit for u values
 	w.bnd.gradients = uptake-weighted (normalized) gradients at boundary}
 \usage{
 struct.quant(out, zdim = 1, xdim = 1, bndT = 0.75, re.sign = TRUE,
-  ddf = 5)
+  sm.reg = TRUE, ddf = 5)
 }
 \description{
 Structural quantitation summaries of tumor uptake.
@@ -46,6 +48,8 @@ out = output of hetE()
 		(defaults to 75th quantile of VOI radial coordinates) 
 re.sign = if TRUE, flips gradient curve sign for better interpretation
 		(a negative output gradient value would then indicate a decreasing rate)
+ sm.reg = if TRUE, gradients are computed from a smoothed unimodal regression fit
+ ddf = corresponding number of smooth.spline df's (between 5-10 usually works well)
 Values:
 u:		radial coordinates (sorted in increasing order)
 yh.i: 	isotonic fit for u values

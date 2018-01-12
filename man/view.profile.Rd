@@ -4,14 +4,12 @@
 \alias{view.profile}
 \title{Local function, plots output of hetE and struct.quant analyses...
 	hetEo: 	output of hetE()
-sqo: 	output from struct.quant()
-	sdf: 	df for smooth.spline (default 10 usually works well)}
+sqo: 	output from struct.quant()}
 \usage{
-view.profile(hetEo, sqo, sdf = 10, mpatch = "")
+view.profile(hetEo, sqo, mpatch = "")
 }
 \description{
 Local function, plots output of hetE and struct.quant analyses...
 	hetEo: 	output of hetE()
 sqo: 	output from struct.quant()
-	sdf: 	df for smooth.spline (default 10 usually works well)
 }
