@@ -34,7 +34,7 @@ demo.ellmod <- function(){
 		# run ellipsoidal analyses
 		outH = hetE(troi)
 		# final het + gradient quants:
-		outSQ = struct.quant(outH,zdim=dimz,xdim=dimx)
+		outSQ = struct.quant(outH,zdim=dimz,xdim=dimx,ddf=10)
 		het0 = outH$het0
 		het1 = outH$het1
 		dg.r = outSQ$gradients
@@ -67,9 +67,6 @@ demo.ellmod <- function(){
 	# load + display the two demo cases
 	grDevices::dev.new()
 	op <- graphics::par(mfrow=c(2,3),font=2,font.lab=2,font.axis=2)
-	# Case_A_ROI <- Case_B_ROI <- NULL
-	# load("data/Case_A_ROI.rda")
-	# load("data/Case_B_ROI.rda")
 	scan.views(Case_A_ROI,mlab=ptids[1])
 	scan.views(Case_B_ROI,mlab=ptids[2])
 	
@@ -96,8 +93,6 @@ demo.ellmod <- function(){
 	cat("\nGradient summaries:\n")
 	print(round(gradients.df,2))
 	
-	rm(Case_A_ROI)	
-	rm(Case_B_ROI)
 	graphics::par(op) # reset par()'s initial settings
 	return(1)
 }
