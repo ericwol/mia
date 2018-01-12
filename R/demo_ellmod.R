@@ -46,7 +46,7 @@ demo.ellmod <- function(){
 		# plot all this:
 		if(.Platform$OS.type=="unix"){ grDevices::quartz() } else { grDevices::x11() }
 		graphics::par(font=2,font.axis=2,font.lab=2)
-		plot.profile(outH,outSQ,sdf=10,mpatch=paste(", ",ptid))
+		view.profile(outH,outSQ,sdf=10,mpatch=paste(", ",ptid))
 
 		# return
 		return(list(outH=outH,outSQ=outSQ,het0=het0,het1=het1,

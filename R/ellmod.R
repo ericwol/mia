@@ -2,6 +2,7 @@
 # utils
 
 #' @import stats
+#' @export
 project <- function(x,y){
 # Uptake-weighted PCA of 3D coordinates x... y is the uptake.
 	# u0 = mean of the xi weighted by yi
@@ -26,7 +27,7 @@ project <- function(x,y){
 #' @import stats
 #' @import graphics
 #' @export
-plot.profile <- function(hetEo,sqo,sdf=10,mpatch=""){
+view.profile <- function(hetEo,sqo,sdf=10,mpatch=""){
 # Local function, plots output of hetE and struct.quant analyses...
 # 	hetEo: 	output of hetE()
 #	sqo: 	output from struct.quant()
@@ -69,6 +70,7 @@ plot.profile <- function(hetEo,sqo,sdf=10,mpatch=""){
 # monotonic regression
 
 #' @import stats
+#' @export
 iso.reg <- function(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5) {
 # Computes monotonically decreasing nonparametric least squares regression.
 # Input:
@@ -102,6 +104,7 @@ iso.reg <- function(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5) {
 	return(keep)
 }
 
+#' @export
 grad <- function(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5){
 # Makes a gradient to use in nls
 	yh = iso.reg(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5)[,2]
@@ -224,6 +227,7 @@ hetE <- function(z,par0=NULL,doplot=FALSE){
 
 #' @import stats
 #' @import quadprog
+#' @export
 unismooth <- function(x,y,w=rep(1,length(x))){ 
 # Unimodal data fit when mode is selected via a simple rule.
 # Returns cbind(x,yhat), i.e. x values and regression fit y-values.
@@ -303,6 +307,7 @@ unismooth <- function(x,y,w=rep(1,length(x))){
 }
 
 #' @import stats
+#' @export
 unismooth.sp <- function(u,y,ddf=50){
 # Returns a smoothed version of unismooth(u,y)'s bitonic curve output,
 # using a cubic smoothing spline.
