@@ -28,26 +28,17 @@ project <- function(x,y){
 #' Local function, plots output of hetE and struct.quant analyses...
 #' 	hetEo: 	output of hetE()
 #'	sqo: 	output from struct.quant()
-#' 	sdf: 	df for smooth.spline (default 10 usually works well)
 #'
 #' @import stats
 #' @import graphics
 #' @export
-view.profile <- function(hetEo,sqo,sdf=10,mpatch=""){
+view.profile <- function(hetEo,sqo,mpatch=""){
 	v = hetEo$iso.reg.out
 	yh0 = v[,2] 
 	is = order(v[,1])
 	u = v[is,1]
 	dg = sqo$normalized.gradients
 	dg.w = sqo$w.gradients
-	# smoothing of output monotonic stepwise regression
-	gs = stats::smooth.spline(u,yh0[is]) 
-	# the following yields very rough gradient info:
-	g = stats::approx(gs$x,gs$y,xout=u)$y 
-	# smooth initial regression more:
-	gs = stats::smooth.spline(u,g,df=sdf) # smooth out again
-	gout = stats::approx(gs$x,gs$y,xout=u)$y # output smooth monotonic regression 
-	#
 	graphics::par(mfrow=c(2,1))
 	# uptake profiles
 	ylimi=range(c(v[is,c(3,2)]))
@@ -56,14 +47,16 @@ view.profile <- function(hetEo,sqo,sdf=10,mpatch=""){
 		type="pl",lty=c(1),pch=20,ylim=ylimi,lwd=3,cex=.5,
 		main=paste("Initial data and smooth regressions",mpatch,sep=""))
 	graphics::points(u,sqo$yh.i,ylim=ylimi,cex=1.2,col=2)
-	graphics::points(u, sqo$yh.b,col=4,pch=20,cex=1)
+	graphics::points(u,sqo$yh.b,col=4,pch=20,cex=1)
+	graphics::abline(h=0,col=8,lwd=.8)	
 	graphics::legend("topright",legend=c("isotonic","bitonic"),lty=1,
 		lwd=c(5,4),col=c(2,4))
 	# gradients
 	graphics::plot(u,dg.w,pch=20,main=paste("gradients",mpatch,sep=""),
 		xlab="u (radial ellipsoidal coordinates)",
 		ylab="gradient summaries")
-	graphics::points(u,dg,pch=20,col=2,cex=.6)	
+	graphics::points(u,dg,pch=20,col=8,cex=1.2)	
+	graphics::abline(h=0,col=8,lwd=.8)	
 	graphics::legend("topright",legend=c("weighted","normalized"),pch=20,col=c(1,2))
 }
 
@@ -195,8 +188,8 @@ hetE <- function(z,par0=NULL,doplot=FALSE){
 		coef=c(uu1,uu2,uu3,a1,a2,a3,a4,a5) 
 		nls.cv='FALSE'
 		result=try(aa<-nls(~ grad(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5),
-			control=nls.control(maxiter = iters,warnOnly = TRUE,minFactor=1/(4096*256)),
-			trace=TRUE,
+			control=nls.control(maxiter=iters,warnOnly=TRUE,minFactor=1/(4096*256)),
+			trace=FALSE,
 			#data=datalist,
 			start=list(uu1=uu1,uu2=uu2,uu3=uu3,a1=a1,a2=a2,a3=a3,a4=a4,a5=a5)),silent=TRUE)
 		if(!inherits(result,"try-error")){ 
@@ -339,6 +332,8 @@ unismooth.sp <- function(u,y,ddf=50){
 #'			(defaults to 75th quantile of VOI radial coordinates) 
 #'	re.sign = if TRUE, flips gradient curve sign for better interpretation
 #'			(a negative output gradient value would then indicate a decreasing rate)
+#'  sm.reg = if TRUE, gradients are computed from a smoothed unimodal regression fit
+#'  ddf = corresponding number of smooth.spline df's (between 5-10 usually works well)
 #' Values:
 #'	u:		radial coordinates (sorted in increasing order)
 #'	yh.i: 	isotonic fit for u values
@@ -361,13 +356,13 @@ unismooth.sp <- function(u,y,ddf=50){
 #' 
 #' @import stats
 #' @export
-struct.quant <- function(out,zdim=1,xdim=1,bndT=.75,re.sign=TRUE,ddf=5){
+struct.quant <- function(out,zdim=1,xdim=1,bndT=.75,re.sign=TRUE,sm.reg=TRUE,ddf=5){
 	vb = out$iso.reg.out
 	o = order(vb[,1])
 	y = vb[o,3]
 	u = vb[o,1] 
-	u = u/median(ifelse(u>.001,u,.001))
-	if(1){ # just a switch:
+	# u = u/median(ifelse(u>.001,u,.001))
+	if(!sm.reg){ # just a switch:
 		# ..... one could switch to this if unsmoothed regression cuve is preferred
 		uu = unismooth(u,y)
 	} else {

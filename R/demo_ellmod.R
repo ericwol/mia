@@ -14,7 +14,7 @@
 demo.ellmod <- function(){
 	# ------------------------------------------------------------------------ 
 	# internal functions
-	analyse.and.plot <- function(tsv,ptid){
+	analyse.and.plot <- function(tsv,ptid,ddf=5){
 	# Internal function; analyses input VOI tsv and plots uptake profiles.
 	# Value:
 	# 	a list containing outputs of hetE() and struct.quant()
@@ -34,7 +34,7 @@ demo.ellmod <- function(){
 		# run ellipsoidal analyses
 		outH = hetE(troi)
 		# final het + gradient quants:
-		outSQ = struct.quant(outH,zdim=dimz,xdim=dimx,ddf=10)
+		outSQ = struct.quant(outH,zdim=dimz,xdim=dimx,ddf=ddf)
 		het0 = outH$het0
 		het1 = outH$het1
 		dg.r = outSQ$gradients
@@ -44,9 +44,10 @@ demo.ellmod <- function(){
 		grad = stats::quantile(dg,cqs,na.rm=TRUE)
 		wgrad = stats::quantile(dg.w,cqs,na.rm=TRUE) 
 		# plot all this:
-		if(.Platform$OS.type=="unix"){ grDevices::quartz() } else { grDevices::x11() }
+		# if(.Platform$OS.type=="unix"){ grDevices::quartz() } else { grDevices::x11() }
+		grDevices::dev.new()
 		graphics::par(font=2,font.axis=2,font.lab=2)
-		view.profile(outH,outSQ,sdf=10,mpatch=paste(", ",ptid))
+		view.profile(outH,outSQ,mpatch=paste(", ",ptid))
 
 		# return
 		return(list(outH=outH,outSQ=outSQ,het0=het0,het1=het1,
