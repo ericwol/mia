@@ -67,9 +67,9 @@ demo.ellmod <- function(){
 	# load + display the two demo cases
 	grDevices::dev.new()
 	op <- graphics::par(mfrow=c(2,3),font=2,font.lab=2,font.axis=2)
-	Case_A_ROI <- Case_B_ROI <- NULL
-	load("data/Case_A_ROI.rda")
-	load("data/Case_B_ROI.rda")
+	# Case_A_ROI <- Case_B_ROI <- NULL
+	# load("data/Case_A_ROI.rda")
+	# load("data/Case_B_ROI.rda")
 	scan.views(Case_A_ROI,mlab=ptids[1])
 	scan.views(Case_B_ROI,mlab=ptids[2])
 	
