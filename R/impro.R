@@ -1,12 +1,14 @@
+#  In: impro.R
+#' Turns a list-format VOI into a raster form (i.e. a 3D array).
+#' Input:
+#'   voi is in list-format (u,w,x,y,z) as in AMIDE
+#' Value:
+#'   returns a raster form of the voi
+#' The output raster is filled with NA's where values 
+#' are not found in voi.
+#'
 #' @export
 rasterize.voi <- function(voi,def=NA){
-# In: impro.R
-# Input:
-#   voi is in list-format (u,w,x,y,z) as in AMIDE
-# Value:
-#   returns a raster form of the voi
-# The output raster is filled with 0's where values 
-# are not found in voi.
 	xg = sort(unique(voi[,3]))
 	yg = sort(unique(voi[,4]))
 	zg = sort(unique(voi[,5]))
@@ -23,11 +25,12 @@ rasterize.voi <- function(voi,def=NA){
 	return(ras)
 }
 
+#' Displays transverse, sagittal and coronal views of input 3D scan tsv.
+#' mlab is a patch string for more detailed plot main title.
+#' LWD indicates width of crosshairs (default .8).
+#'
 #' @export
 scan.views <- function(tsv,mlab="",LWD=.8){
-# Displays transverse, sagittal and coronal views of input 3D scan tsv.
-# mlab is a patch string for more detailed plot main title.
-# LWD indicates width of crosshairs (default .8).
 	rtsv = rasterize.voi(tsv)
 	dd = dim(rtsv)
 	s = floor(dd/2)	

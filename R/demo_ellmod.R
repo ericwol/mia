@@ -1,17 +1,17 @@
+#' Demonstrates the use of hetE output. 
+#' Runs heterogeneity and gradient analysis for two sample datasets
+#' Uses "impro.R", our own image/raster-handling functions for display
+#' Uses "hetE.R", an implementation of (ellipsoidal) structural analysis tools
+#' Note: uptake values are expressed in SUV scale for these test datasets
+#' CaseA.ClinicalSUVmax = 2.7
+#' CaseB.ClinicalSUVmax = 7.8
+#
 #' @import utils
 #' @import stats
 #' @import graphics
 #' @import grDevices
 #' @export
 demo.ellmod <- function(){
-# Demonstrates the use of hetE output. 
-# Runs heterogeneity and gradient analysis for two sample datasets
-# Uses "impro.R", our own image/raster-handling functions for display
-# Uses "hetE.R", an implementation of (ellipsoidal) structural analysis tools
-# Note: uptake values are expressed in SUV scale for these test datasets
-# CaseA.ClinicalSUVmax = 2.7
-# CaseB.ClinicalSUVmax = 7.8
-#
 	# ------------------------------------------------------------------------ 
 	# internal functions
 	analyse.and.plot <- function(tsv,ptid){

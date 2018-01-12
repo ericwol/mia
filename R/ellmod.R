@@ -1,10 +1,11 @@
 # ----------------------------------------------------------------------------------- 
 # utils
 
+#' Uptake-weighted PCA of 3D coordinates x... y is the uptake.
+#'
 #' @import stats
 #' @export
 project <- function(x,y){
-# Uptake-weighted PCA of 3D coordinates x... y is the uptake.
 	# u0 = mean of the xi weighted by yi
 	wy = ifelse(y>0,y,mean(y)/100)	
 	# weighted means of coordinates
@@ -24,15 +25,15 @@ project <- function(x,y){
 	return(t(D %*% t(G) %*% t(cent)))
 }
 
+#' Local function, plots output of hetE and struct.quant analyses...
+#' 	hetEo: 	output of hetE()
+#'	sqo: 	output from struct.quant()
+#' 	sdf: 	df for smooth.spline (default 10 usually works well)
+#'
 #' @import stats
 #' @import graphics
 #' @export
 view.profile <- function(hetEo,sqo,sdf=10,mpatch=""){
-# Local function, plots output of hetE and struct.quant analyses...
-# 	hetEo: 	output of hetE()
-#	sqo: 	output from struct.quant()
-# 	sdf: 	df for smooth.spline (default 10 usually works well)
-#
 	v = hetEo$iso.reg.out
 	yh0 = v[,2] 
 	is = order(v[,1])
@@ -69,21 +70,21 @@ view.profile <- function(hetEo,sqo,sdf=10,mpatch=""){
 # ----------------------------------------------------------------------------------- 
 # monotonic regression
 
+#' Computes monotonically decreasing nonparametric least squares regression.
+#' Input:
+#'	 xstar:		projected coordinates
+#'	 y:			uptake
+#'	 uu1--uu3:	positioning of ellipse (center point)
+#'	 a1--a5:		makings of covar matrix (ellipse)
+#' Returns:
+#' 	3-col array [tx,ytx,y] where
+#' 	 tx:	 	ellipsoidal coordinates,
+#' 	 ytx:		evaluation of monotnoic regression on tx grid,
+#' 	 y: 		input uptake y.
+#'
 #' @import stats
 #' @export
 iso.reg <- function(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5) {
-# Computes monotonically decreasing nonparametric least squares regression.
-# Input:
-#	 xstar:		projected coordinates
-#	 y:			uptake
-#	 uu1--uu3:	positioning of ellipse (center point)
-#	 a1--a5:		makings of covar matrix (ellipse)
-# Returns:
-# 	3-col array [tx,ytx,y] where
-# 	 tx:	 	ellipsoidal coordinates,
-# 	 ytx:		evaluation of monotnoic regression on tx grid,
-# 	 y: 		input uptake y.
-#
 	# conversion matrix
 	y = y*(-1) # because code fits a monotonic-increasing curve
 	# compute ellipsoidal radii tx form xstar
@@ -104,9 +105,10 @@ iso.reg <- function(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5) {
 	return(keep)
 }
 
+#' Makes a gradient to use in nls
+#'
 #' @export
 grad <- function(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5){
-# Makes a gradient to use in nls
 	yh = iso.reg(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5)[,2]
 	dev = (y-yh)
 	chg = .01  
@@ -134,36 +136,37 @@ grad <- function(xstar,y,uu1,uu2,uu3,a1,a2,a3,a4,a5){
 # ----------------------------------------------------------------------------------- 
 # monotonic analyzer
 
+#' Runs heterogeneity analysis based on isotonic regression, as in 
+#'   Eary JF, O’Sullivan F, O’Sullivan J, Conrad EU. 
+#'   Spatial heterogeneity in sarcoma 18F-FDG uptake as a predictor of patient outcome. 
+#'   J Nucl Med. 2008; 49:1973–1979
+#' Arguments
+#' z:	input ROI
+#'		y=z[,5]; x=z[,2:4]   #x is location and y is uptake
+#' 		eg: read ROID; output is column 5; location is col 2:4
+#' 			nr=scan('ROID',n=1);
+#'			z=matrix(scan('ROID',skip=1),nrow=nr,byrow=T)
+#' par0: initial parameters for nls
+#'		uu1=par0[1]; uu2=par0[2]; uu3=par0[3]; 
+#'		a1=par0[4] ; a2=par0[5] ; a3=par0[6] ; a4=par0[7] ; a5=par0[8]
+#' Values
+#' 	v:		 output of iso.reg:
+#' 			   - fitted monotonic regression line: yh=v[,2] 
+#'			   - residuals: res = (v[,3]-v[,2])
+#' 	het0: 	 100*mean(res^2)/mean(y^2)	
+#' 	het1: 	 100*mean(res^2)/var(y)
+#'	vary:	 var(y)
+#'	hetvals: round(c(het0,het1,var(y)),4) [for retro-compatibility purposes]
+#' Updates:
+#'	12 Dec 2016: - restricted call to nls to case where sd>mv, where 
+#'					'sd' = sqrt(var(yh0)) (yh0 = fitted isotonic values) 
+#'					'mv' = .0001*abs(mean(yh0))
+#'				 - more robust call to nls
+#'
+#'
 #' @import graphics
 #' @export
 hetE <- function(z,par0=NULL,doplot=FALSE){
-# Runs heterogeneity analysis based on isotonic regression, as in 
-#   Eary JF, O’Sullivan F, O’Sullivan J, Conrad EU. 
-#   Spatial heterogeneity in sarcoma 18F-FDG uptake as a predictor of patient outcome. 
-#   J Nucl Med. 2008; 49:1973–1979
-# Arguments
-# z:	input ROI
-#		y=z[,5]; x=z[,2:4]   #x is location and y is uptake
-# 		eg: read ROID; output is column 5; location is col 2:4
-# 			nr=scan('ROID',n=1);
-#			z=matrix(scan('ROID',skip=1),nrow=nr,byrow=T)
-# par0: initial parameters for nls
-#		uu1=par0[1]; uu2=par0[2]; uu3=par0[3]; 
-#		a1=par0[4] ; a2=par0[5] ; a3=par0[6] ; a4=par0[7] ; a5=par0[8]
-# Values
-# 	v:		 output of iso.reg:
-# 			   - fitted monotonic regression line: yh=v[,2] 
-#			   - residuals: res = (v[,3]-v[,2])
-# 	het0: 	 100*mean(res^2)/mean(y^2)	
-# 	het1: 	 100*mean(res^2)/var(y)
-# 	vary:	 var(y)
-#	hetvals: round(c(het0,het1,var(y)),4) [for retro-compatibility purposes]
-# Updates:
-#	12 Dec 2016: - restricted call to nls to case where sd>mv, where 
-#					'sd' = sqrt(var(yh0)) (yh0 = fitted isotonic values) 
-#					'mv' = .0001*abs(mean(yh0))
-#				 - more robust call to nls
-#
 	# Standardise	
 	y=z[,5]; x=z[,2:4]   #x is location and y is uptake
 	xstar = project(x,y)
@@ -225,14 +228,14 @@ hetE <- function(z,par0=NULL,doplot=FALSE){
 # ----------------------------------------------------------------------------------- 
 # Unimodal (bitonic) regression
 
+#' Unimodal data fit when mode is selected via a simple rule.
+#' Returns cbind(x,yhat), i.e. x values and regression fit y-values.
+#' Version written 12/12/2016
+#'
 #' @import stats
 #' @import quadprog
 #' @export
 unismooth <- function(x,y,w=rep(1,length(x))){ 
-# Unimodal data fit when mode is selected via a simple rule.
-# Returns cbind(x,yhat), i.e. x values and regression fit y-values.
-# Version written 12/12/2016
-#
 	# Mode point -> mx
 	out = stats::smooth.spline(x,y,w=w,spar=.75) 
 	sx = out$x 
@@ -306,17 +309,17 @@ unismooth <- function(x,y,w=rep(1,length(x))){
  	return(cbind(x,yhat))
 }
 
+#' Returns a smoothed version of unismooth(u,y)'s bitonic curve output,
+#' using a cubic smoothing spline.
+#' ddf controls the number of degrees of freedom for smooth.spline.
+#' Value
+#' 	u: same as input u (radial coordinate of voxels)
+#'	y: same as input y (uptake values at those voxels)
+#'	breg:typical approx() output y, i.e. smoothed y-values, same length as u.
+#'
 #' @import stats
 #' @export
 unismooth.sp <- function(u,y,ddf=50){
-# Returns a smoothed version of unismooth(u,y)'s bitonic curve output,
-# using a cubic smoothing spline.
-# ddf (default 50) controls the number of degrees of freedom for smooth.spline.
-# Value
-# 	u: same as input u (radial coordinate of voxels)
-#	y: same as input y (uptake values at those voxels)
-#	breg:typical approx() output y, i.e. smoothed y-values, same length as u.
-#
 	ur = unismooth(u,y)
 	bs = stats::smooth.spline(ur,df=ddf)
 	gb = stats::approx(bs$x,bs$y,xout=u,rule=2)$y 
@@ -326,39 +329,39 @@ unismooth.sp <- function(u,y,ddf=50){
 
 #----------------------------------------------------------------------- final quantitation
 
+#' Structural quantitation summaries of tumor uptake.
+#' Arguments:
+#'	out = output of hetE() 
+#' 	zdim = slice thickness (defaults to 1)
+#' 	xdim = voxel transverse dimensions (defaults to 1)
+#' 			Ex: zdim=xx$Thickness[kk]; xdim=xx$InPlaneDim[kk]
+#' 	bndT = cutoff quantile threshold defining the start of the boundary rim 
+#'			(defaults to 75th quantile of VOI radial coordinates) 
+#'	re.sign = if TRUE, flips gradient curve sign for better interpretation
+#'			(a negative output gradient value would then indicate a decreasing rate)
+#' Values:
+#'	u:		radial coordinates (sorted in increasing order)
+#'	yh.i: 	isotonic fit for u values
+#'	yh.b: 	bitonic fit for u values
+#' 	fractional.void = F1
+#' 	volume = F2
+#' 	contrast.ratio = F3
+#' 	max = F4
+#' 	boundary.gradient = F5
+#' 	cv = F6
+#' 	y = model uptake (where y = out$v[order(v[,1],3])
+#' 	gradients = all gradient values evaluated at locations u 
+#' 			(expressed in the units of the input uptake values)
+#' 			(where u is a normalized version of sort(out$v[,1]))
+#' 	normalized.gradients = gradients/F4 (unitless, normalized to (-1,1))
+#' 	w.gradients = uptake-weighted normalized gradients,
+#' 	bnd.gradients = gradients at boundary
+#' 	normalized.bnd.gradients = normalized gradients at boundary
+#' 	w.bnd.gradients = uptake-weighted (normalized) gradients at boundary
+#' 
 #' @import stats
 #' @export
 struct.quant <- function(out,zdim=1,xdim=1,bndT=.75,re.sign=TRUE,ddf=5){
-# Structural quantitation summaries of tumor uptake.
-# Arguments:
-#	out = output of hetE() 
-# 	zdim = slice thickness (defaults to 1)
-# 	xdim = voxel transverse dimensions (defaults to 1)
-# 			Ex: zdim=xx$Thickness[kk]; xdim=xx$InPlaneDim[kk]
-# 	bndT = cutoff quantile threshold defining the start of the boundary rim 
-#			(defaults to 75th quantile of VOI radial coordinates) 
-#	re.sign = if TRUE, flips gradient curve sign for better interpretation
-#			(a negative output gradient value would then indicate a decreasing rate)
-# Values:
-#	u:		radial coordinates (sorted in increasing order)
-#	yh.i: 	isotonic fit for u values
-#	yh.b: 	bitonic fit for u values
-# 	fractional.void = F1
-# 	volume = F2
-# 	contrast.ratio = F3
-# 	max = F4
-# 	boundary.gradient = F5
-# 	cv = F6
-# 	y = model uptake (where y = out$v[order(v[,1],3])
-# 	gradients = all gradient values evaluated at locations u 
-# 			(expressed in the units of the input uptake values)
-# 			(where u is a normalized version of sort(out$v[,1]))
-# 	normalized.gradients = gradients/F4 (unitless, normalized to (-1,1))
-# 	w.gradients = uptake-weighted normalized gradients,
-# 	bnd.gradients = gradients at boundary
-# 	normalized.bnd.gradients = normalized gradients at boundary
-# 	w.bnd.gradients = uptake-weighted (normalized) gradients at boundary
-# 
 	vb = out$iso.reg.out
 	o = order(vb[,1])
 	y = vb[o,3]
